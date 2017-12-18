@@ -44,8 +44,13 @@ class Eureka(object):
         eureka_url = self.app.config.get('EUREKA_SERVICE_URL', None)
         data_center = self.app.config.get('EUREKA_DATACENTER', None)
         host_name = self.app.config.get('EUREKA_HOSTNAME', 'localhost')
+        heartbeat_interval = self.app.config.get('EUREKA_HEARTBEAT', None)
 
-        ec = EurekaClient(name=name, host_name=host_name,eureka_url=eureka_url, data_center= data_center, **kwargs)
+        ec = EurekaClient(name=name, host_name=host_name,
+            eureka_url=eureka_url, 
+            data_center= data_center,
+            heartbeat_interval=heartbeat_interval, 
+            **kwargs)
         ec.star()
 
         pass
