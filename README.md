@@ -8,8 +8,7 @@ Flask Eureka Integration
 How to
 ======
 
-.. code-block:: python
-
+```python
     from flask import Flask
     from flask_eureka import Eureka
 
@@ -23,6 +22,7 @@ How to
     )
 
     app.run()
+```
 
 Open your eureka discovery service, and the application will be shown as *my-flask-service*.
 
