@@ -22,6 +22,12 @@ How to
     app.run()
 ```
 
+In addition to this, the Eureka defaul blueprint *eureka_bp* offered by the library must be added to your application:
+```python
+    from flask_eureka.eureka import eureka_bp
+    app.register_blueprint(eureka_bp)
+```
+
 Open your eureka discovery service, and the application will be shown as *my-flask-service*.
 
 Configuration
