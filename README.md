@@ -33,7 +33,7 @@ Open your eureka discovery service, and the application will be shown as *my-fla
 Configuration
 =============
 
-The flask-eureka library integrate with flask's configuration mechanism. The following environment variables are used:
+The flask-eureka library integrate with flask's configuration mechanism. The following (environment) variables are used:
 
 - SERVICE_NAME = Service name is used as the application ID towards Eureka
 - EUREKA_SERVICE_URL= The Eureka service endpoint used for registration
