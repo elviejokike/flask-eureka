@@ -67,7 +67,7 @@ class EurekaClient(object):
         self.host_name = host_name or os.environ.get(EUREKA_INSTANCE_HOSTNAME, 'localhost')
 
         if data_center == "Amazon":
-            self.host_name = get_metadata("public-hostname")
+            self.host_name = get_metadata("hostname")
         elif not host_name:
             self.host_name = host_info['host']
 
@@ -163,8 +163,8 @@ class EurekaClient(object):
                 'local-hostname': get_metadata('local-hostname'),
                 'availability-zone': get_metadata('availability-zone'),
                 'instance-id': get_metadata('instance-id'),
-                'public-ipv4': get_metadata('public-ipv4'),
-                'public-hostname': get_metadata('public-hostname'),
+                'public-ipv4': get_metadata('local-ipv4'),
+                'public-hostname': get_metadata('hostname'),
                 'ami-manifest-path': get_metadata('ami-manifest-path'),
                 'local-ipv4': get_metadata('local-ipv4'),
                 'ami-id': get_metadata('ami-id'),

@@ -15,7 +15,7 @@ class Error(Exception):
 class EC2Metadata:
     """Class for querying metadata from EC2"""
 
-    def __init__(self, addr='169.254.169.254', api='2008-02-01'):
+    def __init__(self, addr='169.254.169.254', api='latest'):
         self.addr = addr
         self.api = api
 
