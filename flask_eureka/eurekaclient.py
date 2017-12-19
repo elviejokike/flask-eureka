@@ -219,7 +219,7 @@ class EurekaClient(object):
         success = False
         for eureka_url in self.eureka_urls:
             try:
-                register_response = self.requests.POST(urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
+                register_response = self.requests.POST(url=urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
                                   headers={'Content-Type': 'application/json'})
                 success = True
             except ApiException as ex:
@@ -227,15 +227,17 @@ class EurekaClient(object):
         if not success:
             raise EurekaRegistrationFailedException("Did not receive correct reply from any instances")
 
-    def renew(self, new_status='UP'):
-        logger.info(' Updating registeration status %s', new_status)
+    def renew(self):
+        """
+            Send application instance heartbeat
+        """
+        logger.info(' Updating registeration status ')
         success = False
         for eureka_url in self.eureka_urls:
             try:
-                register_response = self.requests.PUT(urljoin(eureka_url, self.service_path + "/%s/%s/status?value=%s" % (
+                register_response = self.requests.PUT(url=urljoin(eureka_url, self.service_path + '/%s/%s' % (
                     self.app_name,
-                    self.get_instance_id(),
-                    new_status
+                    self.get_instance_id()
                 )))
                 success = True
             except ApiException as ex:
@@ -246,22 +248,6 @@ class EurekaClient(object):
                     success = False
         if not success:
             raise EurekaUpdateFailedException("Did not receive correct reply from any instances")
-
-    def heartbeat(self):
-        instance_id = self.host_name
-        if self.data_center == "Amazon":
-            instance_id = get_metadata('instance-id')
-        success = False
-        for eureka_url in self.eureka_urls:
-            try:
-                r = self.requests.PUT(urljoin(eureka_url, "apps/%s/%s" % (self.app_name, instance_id)))
-                r.raise_for_status()
-                success = True
-                break
-            except:
-                pass
-        if not success:
-            raise EurekaHeartbeatFailedException("Did not receive correct reply from any instances")
 
     #a generic get request, since most of the get requests for discovery will take a similar form
     def _get_from_any_instance(self, endpoint):
