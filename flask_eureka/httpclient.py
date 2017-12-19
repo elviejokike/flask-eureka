@@ -119,10 +119,6 @@ class HttpClientObject(object):
         # log response body
         logger.debug("response body: %s" % r.data)
 
-        if r.status == 404:
-            r.data = None
-            return r
-
         if r.status not in range(200, 206):
             raise ApiException(http_resp=r)
 

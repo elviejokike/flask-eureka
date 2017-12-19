@@ -1,3 +1,7 @@
+"""
+    Eureka Client
+"""
+
 import json
 import logging
 import os
@@ -9,7 +13,7 @@ from threading import Thread
 import dns.resolver
 
 from .ec2metadata import get_metadata
-from .httpclient import HttpClientObject
+from .httpclient import HttpClientObject, ApiException
 from .hostinfo import HostInfo
 
 logger = logging.getLogger('service.eureka')
@@ -34,19 +38,19 @@ class EurekaHeartbeatFailedException(EurekaClientException):
 class EurekaGetFailedException(EurekaClientException):
     pass
 
-
 class EurekaClient(object):
     def __init__(self, name, eureka_url=None, eureka_domain_name=None, host_name=None, data_center=None,
                  vip_address=None, secure_vip_address=None, port=None, secure_port=None, use_dns=True, region=None,
-                 prefer_same_zone=True, context="eureka/v2", eureka_port=None, heartbeat_interval=None):
+                 prefer_same_zone=True, context="eureka/v2", eureka_port=None, heartbeat_interval=None,service_path=None):
 
         self.app_name = name
 
         self.eureka_url = eureka_url or os.environ.get('EUREKA_SERVICE_URL', None)
         self.data_center = data_center or os.environ.get('EUREKA_DATACENTER', None)
-        self.heartbeat_interval = heartbeat_interval or os.environ.get('EUREKA_HEARTBEAT', 5*60)
+        self.heartbeat_interval = heartbeat_interval or os.environ.get('EUREKA_HEARTBEAT_INTERVAL', 5*60)
+        self.service_path = service_path or os.environ.get('EUREKA_SERVICE_PATH', 'eureka/apps')
         self.port = port
-        self.secure_port = secure_port
+        self.secure_port = port
         self.use_dns = use_dns
         self.region = region
         self.prefer_same_zone = prefer_same_zone
@@ -97,6 +101,9 @@ class EurekaClient(object):
         }
 
     def get_eureka_urls(self):
+        """
+            Get Eureka URLs
+        """
         if self.eureka_url:
             return [self.eureka_url]
         elif self.use_dns:
@@ -129,6 +136,9 @@ class EurekaClient(object):
             return service_urls
 
     def get_instance_zone(self):
+        """
+            Get Instance Zone
+        """
         if self.data_center == "Amazon":
             return get_metadata('availability-zone')
         else:
@@ -205,9 +215,8 @@ class EurekaClient(object):
                 register_response = self.requests.POST(urljoin(eureka_url, "eureka/apps/%s" % self.app_name), body=instance_data,
                                   headers={'Content-Type': 'application/json'})
                 success = True
-                break
-            except:
-                pass
+            except ApiException as ex:
+                success = False
         if not success:
             raise EurekaRegistrationFailedException("Did not receive correct reply from any instances")
 
@@ -222,9 +231,12 @@ class EurekaClient(object):
                     new_status
                 )))
                 success = True
-                break
-            except:
-                pass
+            except ApiException as ex:
+                if ex.status == 404:
+                    self.register()
+                    return
+                else:
+                    success = False
         if not success:
             raise EurekaUpdateFailedException("Did not receive correct reply from any instances")
 
