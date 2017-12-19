@@ -7,10 +7,7 @@ eureka_bp = Blueprint('eureka', __name__)
 @eureka_bp.route('/healthcheck')
 def healthcheck():
     """
-    This function is used to say current status to the Consul.
-    Format: https://www.consul.io/docs/agent/checks.html
-
-    :return: Empty response with status 200, 429 or 500
+    Return 200 as default
     """
     return '', 200
 
