@@ -45,11 +45,11 @@ class Eureka(object):
         :param name: name of the eureka application
         """
         name = self.app.config.get('SERVICE_NAME', name)
-        eureka_url = self.app.config.get('EUREKA_SERVICE_URL', None)
-        data_center = self.app.config.get('EUREKA_INSTANCE_DATACENTER', None)
-        host_name = self.app.config.get('EUREKA_INSTANCE_HOSTNAME', 'localhost')
-        heartbeat_interval = self.app.config.get('EUREKA_HEARTBEAT_INTERVAL', None)
-        service_path = self.app.config.get('EUREKA_SERVICE_PATH', None)
+        eureka_url = self.app.config.get(EurekaClient.EUREKA_SERVICE_URL, None)
+        data_center = self.app.config.get(EurekaClient.EUREKA_INSTANCE_DATACENTER, None)
+        host_name = self.app.config.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, 'localhost')
+        heartbeat_interval = self.app.config.get(EurekaClient.EUREKA_HEARTBEAT_INTERVAL, None)
+        service_path = self.app.config.get(EurekaClient.EUREKA_SERVICE_PATH, None)
         port = self._get_service_port()
 
         eureka_client = EurekaClient(name=name, host_name=host_name,
