@@ -173,6 +173,7 @@ class EurekaClient(object):
                 'ipAddr': self.vip_address,
                 'healthCheckUrl': 'http://' + self.host_name  +':5000/healthcheck',
                 'statusPageUrl': 'http://' + self.host_name + ':5000/healthcheck',
+                'homePageUrl': 'http://' + self.host_name + ':5000/healthcheck',
                 'port': {
                     '$': self.port,
                     '@enabled': 'true',
@@ -197,8 +198,9 @@ class EurekaClient(object):
 
     def _hearthbeat(self):
         while True:
-            self.update_status()
             time.sleep(self.heartbeat_interval)
+            self.renew()
+            
 
     def register(self, initial_status="UP"):
         """
@@ -212,7 +214,7 @@ class EurekaClient(object):
         success = False
         for eureka_url in self.eureka_urls:
             try:
-                register_response = self.requests.POST(urljoin(eureka_url, "eureka/apps/%s" % self.app_name), body=instance_data,
+                register_response = self.requests.POST(urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
                                   headers={'Content-Type': 'application/json'})
                 success = True
             except ApiException as ex:
@@ -220,12 +222,12 @@ class EurekaClient(object):
         if not success:
             raise EurekaRegistrationFailedException("Did not receive correct reply from any instances")
 
-    def update_status(self, new_status='UP'):
+    def renew(self, new_status='UP'):
         logger.info(' Updating registeration status %s', new_status)
         success = False
         for eureka_url in self.eureka_urls:
             try:
-                register_response = self.requests.PUT(urljoin(eureka_url, "eureka/apps/%s/%s/status?value=%s" % (
+                register_response = self.requests.PUT(urljoin(eureka_url, self.service_path + "/%s/%s/status?value=%s" % (
                     self.app_name,
                     self.get_instance_id(),
                     new_status
