@@ -8,6 +8,17 @@ Flask Eureka Integration
 How to
 ======
 
+Install package using:
+
+```bash
+pip install flask-eureka
+```
+
+
+
+And then, in your python project:
+
+
 ```python
     from flask import Flask
     from flask_eureka import Eureka
