@@ -51,6 +51,7 @@ class EurekaClient(object):
     EUREKA_HEARTBEAT_INTERVAL = 'EUREKA_HEARTBEAT_INTERVAL'
     EUREKA_SERVICE_PATH = 'EUREKA_SERVICE_PATH'
     EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANCE_HOSTNAME'
+    EUREKA_INSTANCE_PORT = 'EUREKA_INSTANCE_PORT'
     def __init__(self, name, eureka_url=None, eureka_domain_name=None, host_name=None, data_center=None,instance_id=None,
                  vip_address=None, secure_vip_address=None, port=None, secure_port=None, use_dns=True, region=None,
                  prefer_same_zone=True, context="eureka/v2", eureka_port=None, heartbeat_interval=None,service_path=None):
@@ -61,8 +62,8 @@ class EurekaClient(object):
         self.data_center = data_center or os.environ.get(EurekaClient.EUREKA_INSTANCE_DATACENTER, None)
         self.heartbeat_interval = heartbeat_interval or os.environ.get(EurekaClient.EUREKA_HEARTBEAT_INTERVAL, 5*60)
         self.service_path = service_path or os.environ.get(EurekaClient.EUREKA_SERVICE_PATH, 'eureka/apps')
-        self.host_name = host_name or os.environ.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, 'localhost')
-        self.port = port
+        self.host_name = host_name or os.environ.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, None)
+        self.port = port or os.environ.get(EurekaClient.EUREKA_INSTANCE_PORT, None)
         self.secure_port = port
         self.use_dns = use_dns
         self.region = region
