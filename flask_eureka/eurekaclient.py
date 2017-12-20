@@ -50,7 +50,7 @@ class EurekaClient(object):
     EUREKA_INSTANCE_DATACENTER = 'EUREKA_INSTANCE_DATACENTER'
     EUREKA_HEARTBEAT_INTERVAL = 'EUREKA_HEARTBEAT_INTERVAL'
     EUREKA_SERVICE_PATH = 'EUREKA_SERVICE_PATH'
-    EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANE_HOSTNAME'
+    EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANCE_HOSTNAME'
     def __init__(self, name, eureka_url=None, eureka_domain_name=None, host_name=None, data_center=None,instance_id=None,
                  vip_address=None, secure_vip_address=None, port=None, secure_port=None, use_dns=True, region=None,
                  prefer_same_zone=True, context="eureka/v2", eureka_port=None, heartbeat_interval=None,service_path=None):
