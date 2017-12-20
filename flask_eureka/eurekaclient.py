@@ -60,7 +60,7 @@ class EurekaClient(object):
 
         self.eureka_url = eureka_url or os.environ.get(EurekaClient.EUREKA_SERVICE_URL, None)
         self.data_center = data_center or os.environ.get(EurekaClient.EUREKA_INSTANCE_DATACENTER, None)
-        self.heartbeat_interval = heartbeat_interval or os.environ.get(EurekaClient.EUREKA_HEARTBEAT_INTERVAL, 5*60)
+        self.heartbeat_interval = heartbeat_interval or int(os.environ.get(EurekaClient.EUREKA_HEARTBEAT_INTERVAL, 30))
         self.service_path = service_path or os.environ.get(EurekaClient.EUREKA_SERVICE_PATH, 'eureka/apps')
         self.host_name = host_name or os.environ.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, None)
         self.port = port or os.environ.get(EurekaClient.EUREKA_INSTANCE_PORT, None)
