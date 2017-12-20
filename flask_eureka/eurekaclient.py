@@ -75,13 +75,10 @@ class EurekaClient(object):
 
         host_info = HostInfo().get()
 
-        
-
         if data_center == "Amazon":
             self.host_name = get_metadata("hostname")
         elif not host_name:
             self.host_name = host_info['host']
-
 
         self.vip_address = vip_address
         if not self.vip_address:
@@ -90,7 +87,6 @@ class EurekaClient(object):
         self.secure_vip_address = secure_vip_address
         if not self.secure_vip_address:
             self.secure_vip_address = host_info['IPv4']
-
 
         # Relative URL to eureka
         self.context = context
