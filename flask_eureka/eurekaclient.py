@@ -7,8 +7,12 @@ import logging
 import os
 import random
 import time
-from urllib.parse import urljoin
 from threading import Thread
+
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
 
 import dns.resolver
 
@@ -47,7 +51,7 @@ class EurekaClient(object):
     EUREKA_HEARTBEAT_INTERVAL = 'EUREKA_HEARTBEAT_INTERVAL'
     EUREKA_SERVICE_PATH = 'EUREKA_SERVICE_PATH'
     EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANE_HOSTNAME'
-    def __init__(self, name, eureka_url=None, eureka_domain_name=None, host_name=None, data_center=None,
+    def __init__(self, name, eureka_url=None, eureka_domain_name=None, host_name=None, data_center=None,instance_id=None,
                  vip_address=None, secure_vip_address=None, port=None, secure_port=None, use_dns=True, region=None,
                  prefer_same_zone=True, context="eureka/v2", eureka_port=None, heartbeat_interval=None,service_path=None):
 
@@ -64,6 +68,8 @@ class EurekaClient(object):
         self.prefer_same_zone = prefer_same_zone
         self.eureka_domain_name = eureka_domain_name
         self.eureka_port = eureka_port
+        self.heartbeat_task = None
+        self.instance_id = instance_id
 
         host_info = HostInfo().get()
 
@@ -153,10 +159,17 @@ class EurekaClient(object):
             raise NotImplementedError("%s does not implement DNS lookups" % self.data_center)
 
     def get_instance_id(self):
+        """
+            Get Instance ID
+        """
+        if self.instance_id:
+            return instance_id
         return self.host_name + ':' + self.app_name + ':' + str(self.port)
 
     def get_instance_data(self):
-
+        """
+            Get Instance Data
+        """
         data_center_info = {
             'name': self.data_center
         }
@@ -201,7 +214,8 @@ class EurekaClient(object):
         """
         logger.info('Starting eureka registration')
         self.register()
-        self.heartbeat_task = Thread(target=self._hearthbeat, daemon=True)
+        self.heartbeat_task = Thread(target=self._hearthbeat)
+        self.heartbeat_task.daemon = True
         self.heartbeat_task.start()
 
     def _hearthbeat(self):
