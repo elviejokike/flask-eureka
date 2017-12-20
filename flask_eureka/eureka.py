@@ -44,7 +44,7 @@ class Eureka(object):
         name = self.app.config.get('SERVICE_NAME', name)
         eureka_url = self.app.config.get(EurekaClient.EUREKA_SERVICE_URL, None)
         data_center = self.app.config.get(EurekaClient.EUREKA_INSTANCE_DATACENTER, None)
-        host_name = self.app.config.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, 'localhost')
+        host_name = self.app.config.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, None)
         heartbeat_interval = self.app.config.get(EurekaClient.EUREKA_HEARTBEAT_INTERVAL, None)
         service_path = self.app.config.get(EurekaClient.EUREKA_SERVICE_PATH, None)
         port = self._get_service_port()
