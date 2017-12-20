@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flask-eureka',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(exclude=['tests*','examples*']),
     include_package_data=True,
     install_requires=['Flask'],

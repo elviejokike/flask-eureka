@@ -39,6 +39,9 @@ class EurekaGetFailedException(EurekaClientException):
     pass
 
 class EurekaClient(object):
+    """
+        Eureka Client
+    """
     EUREKA_SERVICE_URL = 'EUREKA_SERVICE_URL'
     EUREKA_INSTANCE_DATACENTER = 'EUREKA_INSTANCE_DATACENTER'
     EUREKA_HEARTBEAT_INTERVAL = 'EUREKA_HEARTBEAT_INTERVAL'
@@ -50,10 +53,10 @@ class EurekaClient(object):
 
         self.app_name = name
 
-        self.eureka_url = eureka_url or os.environ.get(EUREKA_SERVICE_URL, None)
-        self.data_center = data_center or os.environ.get(EUREKA_INSTANCE_DATACENTER, None)
-        self.heartbeat_interval = heartbeat_interval or os.environ.get(EUREKA_HEARTBEAT_INTERVAL, 5*60)
-        self.service_path = service_path or os.environ.get(EUREKA_SERVICE_PATH, 'eureka/apps')
+        self.eureka_url = eureka_url or os.environ.get(EurekaClient.EUREKA_SERVICE_URL, None)
+        self.data_center = data_center or os.environ.get(EurekaClient.EUREKA_INSTANCE_DATACENTER, None)
+        self.heartbeat_interval = heartbeat_interval or os.environ.get(EurekaClient.EUREKA_HEARTBEAT_INTERVAL, 5*60)
+        self.service_path = service_path or os.environ.get(EurekaClient.EUREKA_SERVICE_PATH, 'eureka/apps')
         self.port = port
         self.secure_port = port
         self.use_dns = use_dns
@@ -64,7 +67,7 @@ class EurekaClient(object):
 
         host_info = HostInfo().get()
 
-        self.host_name = host_name or os.environ.get(EUREKA_INSTANCE_HOSTNAME, 'localhost')
+        self.host_name = host_name or os.environ.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, 'localhost')
 
         if data_center == "Amazon":
             self.host_name = get_metadata("hostname")
