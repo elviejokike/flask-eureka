@@ -161,7 +161,7 @@ class EurekaClient(object):
             Get Instance ID
         """
         if self.instance_id:
-            return instance_id
+            return self.instance_id
         return self.host_name + ':' + self.app_name + ':' + str(self.port)
 
     def get_instance_data(self):
