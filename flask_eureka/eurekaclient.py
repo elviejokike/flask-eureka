@@ -39,8 +39,10 @@ class EurekaUpdateFailedException(EurekaClientException):
 class EurekaHeartbeatFailedException(EurekaClientException):
     pass
 
+
 class EurekaGetFailedException(EurekaClientException):
     pass
+
 
 class EurekaClient(object):
     """
@@ -52,9 +54,24 @@ class EurekaClient(object):
     EUREKA_SERVICE_PATH = 'EUREKA_SERVICE_PATH'
     EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANCE_HOSTNAME'
     EUREKA_INSTANCE_PORT = 'EUREKA_INSTANCE_PORT'
-    def __init__(self, name, eureka_url=None, eureka_domain_name=None, host_name=None, data_center=None,instance_id=None,
-                 vip_address=None, secure_vip_address=None, port=None, secure_port=None, use_dns=True, region=None,
-                 prefer_same_zone=True, context="eureka/v2", eureka_port=None, heartbeat_interval=None,service_path=None):
+
+    def __init__(self,
+                 name,
+                 eureka_url=None,
+                 eureka_domain_name=None,
+                 host_name=None,
+                 data_center=None,
+                 instance_id=None,
+                 vip_address=None,
+                 secure_vip_address=None,
+                 port=None,
+                 use_dns=True,
+                 region=None,
+                 prefer_same_zone=True,
+                 context="eureka/v2",
+                 eureka_port=None,
+                 heartbeat_interval=None,
+                 service_path=None):
 
         self.app_name = name
 
@@ -93,8 +110,6 @@ class EurekaClient(object):
         self.eureka_urls = self.get_eureka_urls()
         self.requests = HttpClientObject()
 
-
-
     def _get_txt_records_from_dns(self, domain):
         records = dns.resolver.query(domain, 'TXT')
         for record in records:
@@ -107,9 +122,9 @@ class EurekaClient(object):
 
     def get_zones_from_dns(self):
         return {
-            zone_url.split(".")[0]: list(self._get_zone_urls_from_dns("txt.%s" % zone_url)) for zone_url in list(
-                self._get_zone_urls_from_dns('txt.%s.%s' % (self.region, self.eureka_domain_name))
-            )
+            zone_url.split(".")[0]:
+                list(self._get_zone_urls_from_dns("txt.%s" % zone_url))
+            for zone_url in list(self._get_zone_urls_from_dns('txt.%s.%s' % (self.region, self.eureka_domain_name)))
         }
 
     def get_eureka_urls(self):
@@ -124,11 +139,12 @@ class EurekaClient(object):
             assert len(zones) > 0, "No availability zones found for, please add them explicitly"
             if self.prefer_same_zone:
                 if self.get_instance_zone() in zones:
-                    zones = [zones.pop(zones.index(self.get_instance_zone()))] + zones  # Add our zone as the first element
+                    zones = [zones.pop(
+                        zones.index(self.get_instance_zone()))] + zones  # Add our zone as the first element
                 else:
                     logger.warn("No match for the zone %s in the list of available zones %s" % (
                         self.get_instance_zone(), zones)
-                    )
+                                )
             service_urls = []
             for zone in zones:
                 eureka_instances = zone_dns_map[zone]
@@ -190,7 +206,7 @@ class EurekaClient(object):
                 'instanceId': self.get_instance_id(),
                 'hostName': self.host_name,
                 'ipAddr': self.vip_address,
-                'healthCheckUrl': 'http://' + self.host_name  +':5000/healthcheck',
+                'healthCheckUrl': 'http://' + self.host_name + ':5000/healthcheck',
                 'statusPageUrl': 'http://' + self.host_name + ':5000/healthcheck',
                 'homePageUrl': 'http://' + self.host_name + ':5000/healthcheck',
                 'port': {
@@ -212,15 +228,14 @@ class EurekaClient(object):
         """
         logger.info('Starting eureka registration')
         self.register()
-        self.heartbeat_task = Thread(target=self._hearthbeat)
+        self.heartbeat_task = Thread(target=self._heartbeat)
         self.heartbeat_task.daemon = True
         self.heartbeat_task.start()
 
-    def _hearthbeat(self):
+    def _heartbeat(self):
         while True:
             time.sleep(self.heartbeat_interval)
             self.renew()
-            
 
     def register(self, initial_status="UP"):
         """
@@ -234,8 +249,9 @@ class EurekaClient(object):
         success = False
         for eureka_url in self.eureka_urls:
             try:
-                register_response = self.requests.POST(url=urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
-                                  headers={'Content-Type': 'application/json'})
+                self.requests.POST(
+                    url=urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
+                    headers={'Content-Type': 'application/json'})
                 success = True
             except ApiException as ex:
                 success = False
@@ -250,7 +266,7 @@ class EurekaClient(object):
         success = False
         for eureka_url in self.eureka_urls:
             try:
-                register_response = self.requests.PUT(url=urljoin(eureka_url, self.service_path + '/%s/%s' % (
+                self.requests.PUT(url=urljoin(eureka_url, self.service_path + '/%s/%s' % (
                     self.app_name,
                     self.get_instance_id()
                 )))
@@ -264,7 +280,7 @@ class EurekaClient(object):
         if not success:
             raise EurekaUpdateFailedException("Did not receive correct reply from any instances")
 
-    #a generic get request, since most of the get requests for discovery will take a similar form
+    # a generic get request, since most of the get requests for discovery will take a similar form
     def _get_from_any_instance(self, endpoint):
         for eureka_url in self.eureka_urls:
             try:
@@ -292,4 +308,3 @@ class EurekaClient(object):
 
     def get_app_instance(self, app_id, instance_id):
         return self._get_from_any_instance("apps/%s/%s" % (app_id, instance_id))
-

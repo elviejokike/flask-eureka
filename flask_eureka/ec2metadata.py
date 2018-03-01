@@ -9,8 +9,10 @@ METAOPTS = ['ami-id', 'ami-launch-index', 'ami-manifest-path',
             'public-keys', 'ramdisk-id', 'reservation-id', 'security-groups',
             'user-data']
 
+
 class Error(Exception):
     pass
+
 
 class EC2Metadata:
     """Class for querying metadata from EC2"""
@@ -58,7 +60,7 @@ class EC2Metadata:
             if not data:
                 return public_keys
 
-            keyids = [ line.split('=')[0] for line in data.splitlines() ]
+            keyids = [line.split('=')[0] for line in data.splitlines()]
             for keyid in keyids:
                 uri = 'meta-data/public-keys/%d/openssh-key' % int(keyid)
                 public_keys.append(self._get(uri).rstrip())
@@ -70,11 +72,13 @@ class EC2Metadata:
 
         return self._get('meta-data/' + metaopt)
 
+
 def get_metadata(metaopt):
     """primitive: return value of metaopt"""
 
     m = EC2Metadata()
     return m.get(metaopt)
+
 
 def display(metaopts, prefix=False):
     """primitive: display metaopts (list) values with optional prefix"""
@@ -86,6 +90,6 @@ def display(metaopts, prefix=False):
             value = "unavailable"
 
         if prefix:
-            print ("%s: %s" % (metaopt, value))
+            print("%s: %s" % (metaopt, value))
         else:
             print(value)
