@@ -4,13 +4,13 @@ from .eurekaclient import EurekaClient
 
 eureka_bp = Blueprint('eureka', __name__)
 
+
 @eureka_bp.route('/healthcheck')
 def healthcheck():
     """
     Return 200 as default
     """
     return '', 200
-
 
 
 class Eureka(object):
@@ -21,7 +21,6 @@ class Eureka(object):
 
         self.kwargs = kwargs if kwargs else {}
         self.app = None
-
 
         if app is not None:
             self.init_app(app)
@@ -34,7 +33,7 @@ class Eureka(object):
         if 'eureka' in app.extensions:
             raise RuntimeError('Flask application already initialized')
         app.extensions['eureka'] = self
-    
+
     def register_service(self, name=None, **kwargs):
         """
         Register service with eureka service
@@ -50,12 +49,12 @@ class Eureka(object):
         port = self.app.config.get(EurekaClient.EUREKA_INSTANCE_PORT, self._get_service_port())
 
         eureka_client = EurekaClient(name=name, host_name=host_name,
-            eureka_url=eureka_url, 
-            data_center= data_center,
-            heartbeat_interval=heartbeat_interval,
-            service_path=service_path,
-            port=port, 
-            **kwargs)
+                                     eureka_url=eureka_url,
+                                     data_center=data_center,
+                                     heartbeat_interval=heartbeat_interval,
+                                     service_path=service_path,
+                                     port=port,
+                                     **kwargs)
         eureka_client.star()
 
     def _get_service_port(self):
@@ -63,7 +62,7 @@ class Eureka(object):
         Retrieve the service port being used by the flask application
         """
         port = 5000
-        server_name = self.app.config.get('SERVER_NAME',None)
+        server_name = self.app.config.get('SERVER_NAME', None)
         if server_name and ':' in server_name:
             port = int(server_name.rsplit(':', 1)[1])
         return port
