@@ -12,7 +12,8 @@ from threading import Thread
 try:
     from urllib.parse import urljoin
 except ImportError:
-    from urlparse import urljoin
+    pass
+    # from urlparse import urljoin
 
 import dns.resolver
 
@@ -206,9 +207,9 @@ class EurekaClient(object):
                 'instanceId': self.get_instance_id(),
                 'hostName': self.host_name,
                 'ipAddr': self.vip_address,
-                'healthCheckUrl': 'http://' + self.host_name + ':5000/healthcheck',
-                'statusPageUrl': 'http://' + self.host_name + ':5000/healthcheck',
-                'homePageUrl': 'http://' + self.host_name + ':5000/healthcheck',
+                'healthCheckUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
+                'statusPageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
+                'homePageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
                 'port': {
                     '$': self.port,
                     '@enabled': 'true',
@@ -234,8 +235,11 @@ class EurekaClient(object):
 
     def _heartbeat(self):
         while True:
-            time.sleep(self.heartbeat_interval)
-            self.renew()
+            try:
+                time.sleep(self.heartbeat_interval)
+                self.renew()
+            except Exception as ex:
+                print("Eureka connection Exception")
 
     def register(self, initial_status="UP"):
         """
