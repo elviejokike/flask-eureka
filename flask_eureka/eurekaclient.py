@@ -12,7 +12,8 @@ from threading import Thread
 try:
     from urllib.parse import urljoin
 except ImportError:
-    from urlparse import urljoin
+    pass
+    # from urlparse import urljoin
 
 import dns.resolver
 
@@ -98,12 +99,14 @@ class EurekaClient(object):
             self.host_name = host_info['host']
 
         self.vip_address = vip_address
-        if not self.vip_address:
-            self.vip_address = host_info['IPv4']
-
-        self.secure_vip_address = secure_vip_address
-        if not self.secure_vip_address:
-            self.secure_vip_address = host_info['IPv4']
+        # if not self.vip_address:
+        #     self.vip_address = host_info['IPv4']
+        #
+        # self.secure_vip_address = secure_vip_address
+        # if not self.secure_vip_address:
+        #     self.secure_vip_address = host_info['IPv4']
+        self.vip_address=self.app_name
+        self.secure_vip_address=self.app_name
 
         # Relative URL to eureka
         self.context = context
@@ -206,9 +209,9 @@ class EurekaClient(object):
                 'instanceId': self.get_instance_id(),
                 'hostName': self.host_name,
                 'ipAddr': self.vip_address,
-                'healthCheckUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
-                'statusPageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
-                'homePageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
+                'healthCheckUrl': 'http://' + self.host_name + ':' + str(self.port) + '/health',
+                'statusPageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/info',
+                'homePageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/info',
                 'port': {
                     '$': self.port,
                     '@enabled': 'true',
