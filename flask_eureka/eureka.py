@@ -1,17 +1,36 @@
-from flask import Blueprint
+from flask import Blueprint, Response
 
 from .eurekaclient import EurekaClient
+import json
 
 eureka_bp = Blueprint('eureka', __name__)
 
 
-@eureka_bp.route('/healthcheck')
+@eureka_bp.route('/health')
 def healthcheck():
     """
     Return 200 as default
     """
-    return '', 200
+    payback={"status": "UP"}
 
+    resp = Response(response=json.dumps(payback),
+                    status=200,
+                    mimetype="application/json;charset=UTF-8")
+
+
+    return resp
+    # return payback
+
+@eureka_bp.route('/info')
+def info():
+    """
+    Return 200 as default
+    """
+    payback={"id":"ks-nlp"}
+    resp = Response(response=json.dumps(payback),
+                    status=200,
+                    mimetype="application/json;charset=UTF-8")
+    return resp
 
 class Eureka(object):
     def __init__(self, app=None, **kwargs):
