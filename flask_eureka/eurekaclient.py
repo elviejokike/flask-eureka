@@ -70,6 +70,7 @@ class EurekaClient(object):
                  prefer_same_zone=True,
                  context="eureka/v2",
                  eureka_port=None,
+                 https_enabled=False,
                  heartbeat_interval=None,
                  service_path=None):
 
@@ -89,6 +90,7 @@ class EurekaClient(object):
         self.eureka_port = eureka_port
         self.heartbeat_task = None
         self.instance_id = instance_id
+        self.app_protocol = 'https://' if https_enabled else 'http://'
 
         host_info = HostInfo().get()
 
@@ -206,9 +208,9 @@ class EurekaClient(object):
                 'instanceId': self.get_instance_id(),
                 'hostName': self.host_name,
                 'ipAddr': self.vip_address,
-                'healthCheckUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
-                'statusPageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
-                'homePageUrl': 'http://' + self.host_name + ':' + str(self.port) + '/healthcheck',
+                'healthCheckUrl': self.app_protocol + self.host_name + ':' + str(self.port) + '/healthcheck',
+                'statusPageUrl': self.app_protocol + self.host_name + ':' + str(self.port) + '/healthcheck',
+                'homePageUrl': self.app_protocol + self.host_name + ':' + str(self.port) + '/healthcheck',
                 'port': {
                     '$': self.port,
                     '@enabled': 'true',
