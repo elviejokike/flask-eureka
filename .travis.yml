@@ -8,15 +8,11 @@ install:
 - pip install tox-travis
 script:
 - tox
-- "./.travis/run.sh"
 deploy:
-  provider: releases
-  api_key:
-    secure: B+MLra5JlYGtoe64e50eTKDaO5jsSrNA2FLqcpgx3EGjkSeFmSJ40GZKcea40M9MlEFtrNvf3mk3Sle5fNG8zMtlFLRMWgPL9viqTlZKNUUZfsBG0oCLeJhpxHlsEvX+lmXjBUg94KWCRSfvR/TTCLUrq+/niSdv9HFdvtiyBTGW7SGBFxwWSl3ondMinKQPd4Wa9Ch19VKFOnzF+JsXb2SeVd0Jw8AgoatBqOCECYV0j2lrmyifvuk5nOYjoJFr/BuAh9JseTVAtlYoCjkKS0TMQQAJdwQuY2P391rAY3G99yFAiWQY6KcRJC97K9d2dujx7whKDhc5l3/VwHo9U8e8cUekGz1MtndNHEzXW5Cd3FavOE3W5ECuzFCqwon25Jz7b5MW2sEHZwLmV9HkrSfAqc+bLDWgZFAo0tpNEvu8Un/V6MzHaXiKSHVh4dfl/Co3l7glRcQieH+H1Yn0Ppd3pozoge8lmD8h9b/+W0kulwJuwY0/sgSepZc6MONHXUha/tuTOqKz1TSNuGxpfHvY1A9nKpvVwBLTxet2u/Byucn2zxokwTxoWsDrSJa9VNZu6kQyOB0OpubiqCJN4MWRMgBsEFcQNe6u4P7KHjmUKQTI26rTEqLKrmXeX+q1kAg/b3YLYR857fRLncc8b9wHzIPbnWoKxqtoRp25sD4=
-  file:
-    - dist/*.whl
-    - dist/*.tar.gz
+  provider: pypi
+  user: elviejokike
   on:
     repo: elviejokike/flask-eureka
     tags: true
-  skip_cleanup: true
+  password:
+    secure: N9rK9JVxmdCpexQTYeASmZA4KP9faWadsHL+WAiUx+WCB2egSFnsgHQPHi/Jn/pPPaphb0dY0zYUbToaPMEponxaZwOIAFn3a7lqT+kLmoIBqPHGM0+mD7iNTdxrN4tSwbgSpOqHQG9VzMEdMMEOF23LQ8kDgreAfyydHKF+WOXmLNEZ03uiw5F2OV/bWudilBK1X+h9/b70+WSlVUS2kL7wRcMfl4rVvgicFeZGvzOv0Nu8A0aaF9yrQ7hDNRTJ5vEDFYlSYjyG29oXcdNw0c65GlcAjPZJRZpMfNIKnoJ9hYdjY/CK+HfmxbqbJOt76CocsnsgGFkqNC5Uy8oOuGSROhR40ukQcbNxJdoGCSqx7dWS5tcRd1Cr+V8MzzU1OZmVF7eKiBdencg+SxqVZliig/QDMBubdCiuxnInY9tN3sPuk7jKMyWoGGPj9senzR7PZv/yGyu1zB1fIwyaVY5cVzFVp+vkCD9m4ZaxrXbfpZlujFifqFuHlPqJZE1JmnTD7/m6wNNgMthmUPatF6s8EvHFXkkunQSgcYw3apEJJFQ5xDQkU/rLCGLDyVPt8BHc9XKmYSrQApttGAClWT/QdE60Kuq9NLa0aXw+W3EN31Aon86jyjnACHxWmN6zFQIc0AO+gBSHSyWqf+6nYVeMp0VM5m2ZgvvILj9BC20=
