@@ -19,3 +19,4 @@ deploy:
   on:
     repo: elviejokike/flask-eureka
     tags: true
+  skip_cleanup: true
