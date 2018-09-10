@@ -18,3 +18,4 @@ deploy:
     - dist/*.tar.gz
   on:
     repo: elviejokike/flask-eureka
+    tags: true
