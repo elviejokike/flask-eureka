@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='flask-eureka',
-    version='0.1.0',
+    version='0.1.1',
     author='Kike',
     url='https://github.com/elviejokike/flask-eureka',
     keywords=[
