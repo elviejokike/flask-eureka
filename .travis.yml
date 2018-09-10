@@ -6,11 +6,15 @@ python:
 - 3.6
 install:
 - pip install tox-travis
-script: tox
+script:
+- tox
+- "./.travis/run.sh"
 deploy:
   provider: releases
   api_key:
     secure: B+MLra5JlYGtoe64e50eTKDaO5jsSrNA2FLqcpgx3EGjkSeFmSJ40GZKcea40M9MlEFtrNvf3mk3Sle5fNG8zMtlFLRMWgPL9viqTlZKNUUZfsBG0oCLeJhpxHlsEvX+lmXjBUg94KWCRSfvR/TTCLUrq+/niSdv9HFdvtiyBTGW7SGBFxwWSl3ondMinKQPd4Wa9Ch19VKFOnzF+JsXb2SeVd0Jw8AgoatBqOCECYV0j2lrmyifvuk5nOYjoJFr/BuAh9JseTVAtlYoCjkKS0TMQQAJdwQuY2P391rAY3G99yFAiWQY6KcRJC97K9d2dujx7whKDhc5l3/VwHo9U8e8cUekGz1MtndNHEzXW5Cd3FavOE3W5ECuzFCqwon25Jz7b5MW2sEHZwLmV9HkrSfAqc+bLDWgZFAo0tpNEvu8Un/V6MzHaXiKSHVh4dfl/Co3l7glRcQieH+H1Yn0Ppd3pozoge8lmD8h9b/+W0kulwJuwY0/sgSepZc6MONHXUha/tuTOqKz1TSNuGxpfHvY1A9nKpvVwBLTxet2u/Byucn2zxokwTxoWsDrSJa9VNZu6kQyOB0OpubiqCJN4MWRMgBsEFcQNe6u4P7KHjmUKQTI26rTEqLKrmXeX+q1kAg/b3YLYR857fRLncc8b9wHzIPbnWoKxqtoRp25sD4=
-  file: dist/*.whl
+  file:
+    - dist/*.whl
+    - dist/*.tar.gz
   on:
     repo: elviejokike/flask-eureka
