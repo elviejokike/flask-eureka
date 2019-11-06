@@ -50,7 +50,8 @@ class HostInfo(object):
             ipv4 = getoutput("ifconfig " + self.iface + " | grep 'inet ' | awk '{ print $2 }'")
         else:
             ipv4 = getoutput("ifconfig " + self.iface + " | grep 'inet addr' | awk '{ print $2 }'")
-            ipv4 = ipv4.split(':')[1]
+            if ipv4.__contains__(":"):
+                ipv4 = ipv4.split(':')[1]
 
         # ipv4 = socket.gethostbyname(platform.node())
         # if ipv4.split('.')[0] == '127':
