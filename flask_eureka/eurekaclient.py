@@ -72,7 +72,8 @@ class EurekaClient(object):
                  eureka_port=None,
                  https_enabled=False,
                  heartbeat_interval=None,
-                 service_path=None):
+                 service_path=None,
+                 pool_manager=None):
 
         self.app_name = name
 
@@ -110,7 +111,7 @@ class EurekaClient(object):
         # Relative URL to eureka
         self.context = context
         self.eureka_urls = self.get_eureka_urls()
-        self.requests = HttpClientObject()
+        self.requests = HttpClientObject(pool_manager=pool_manager)
 
     def _get_txt_records_from_dns(self, domain):
         records = dns.resolver.query(domain, 'TXT')
