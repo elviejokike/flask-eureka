@@ -21,8 +21,6 @@ from .httpclient import HttpClientObject, ApiException
 from .hostinfo import HostInfo
 
 logger = logging.getLogger('service.eureka')
-logger.setLevel(logging.INFO)
-
 
 class EurekaClientException(Exception):
     pass
@@ -241,7 +239,7 @@ class EurekaClient(object):
                 time.sleep(self.heartbeat_interval)
                 self.renew()
             except Exception as ex:
-                print("Eureka connection Exception")
+                logger.debug("Exception during heartbeat: %s" % eureka_url, str(ex))
 
     def register(self, initial_status="UP"):
         """
@@ -254,12 +252,14 @@ class EurekaClient(object):
 
         success = False
         for eureka_url in self.eureka_urls:
+            url = urljoin(eureka_url, self.service_path + "/%s" % self.app_name)
             try:
                 self.requests.POST(
-                    url=urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
+                    url=url, body=instance_data,
                     headers={'Content-Type': 'application/json'})
                 success = True
             except ApiException as ex:
+                logger.debug("ApiException while trying to register at '%s' error: %s" %  (url, str(ex)))
                 success = False
         if not success:
             raise EurekaRegistrationFailedException("Did not receive correct reply from any instances")
@@ -271,13 +271,15 @@ class EurekaClient(object):
         logger.info(' Updating registeration status ')
         success = False
         for eureka_url in self.eureka_urls:
+            url = urljoin(eureka_url, self.service_path + '/%s/%s' % (
+                self.app_name,
+                self.get_instance_id()
+            ))
             try:
-                self.requests.PUT(url=urljoin(eureka_url, self.service_path + '/%s/%s' % (
-                    self.app_name,
-                    self.get_instance_id()
-                )))
+                self.requests.PUT(url=url)
                 success = True
             except ApiException as ex:
+                logger.debug("ApiException while trying to renew at '%s' error: %s" % (url, str(ex)))
                 if ex.status == 404:
                     self.register()
                     return
