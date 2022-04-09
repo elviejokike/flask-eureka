@@ -52,6 +52,7 @@ class EurekaClient(object):
     EUREKA_SERVICE_PATH = 'EUREKA_SERVICE_PATH'
     EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANCE_HOSTNAME'
     EUREKA_INSTANCE_PORT = 'EUREKA_INSTANCE_PORT'
+    EUREKA_INSTANCE_SECURE_PORT = 'EUREKA_INSTANCE_SECURE_PORT'
 
     def __init__(self,
                  name,
@@ -63,6 +64,7 @@ class EurekaClient(object):
                  vip_address=None,
                  secure_vip_address=None,
                  port=None,
+                 secure_port=None,
                  use_dns=True,
                  region=None,
                  prefer_same_zone=True,
@@ -81,7 +83,7 @@ class EurekaClient(object):
         self.service_path = service_path or os.environ.get(EurekaClient.EUREKA_SERVICE_PATH, 'eureka/apps')
         self.host_name = host_name or os.environ.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, None)
         self.port = port or os.environ.get(EurekaClient.EUREKA_INSTANCE_PORT, None)
-        self.secure_port = port
+        self.secure_port = secure_port or os.environ.get(EurekaClient.EUREKA_INSTANCE_SECURE_PORT, None)
         self.use_dns = use_dns
         self.region = region
         self.prefer_same_zone = prefer_same_zone
@@ -212,7 +214,11 @@ class EurekaClient(object):
                 'homePageUrl': self.app_protocol + self.host_name + ':' + str(self.port) + '/healthcheck',
                 'port': {
                     '$': self.port,
-                    '@enabled': 'true',
+                    '@enabled': 'true' if self.port is not None else 'false',
+                },
+                'securePort': {
+                    '$': self.secure_port,
+                    '@enabled': 'true' if self.secure_port is not None else 'false',
                 },
                 'vipAddress': self.vip_address,
                 'dataCenterInfo': {
