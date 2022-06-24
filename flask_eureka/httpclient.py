@@ -42,12 +42,13 @@ class RESTResponse(io.IOBase):
 
 
 class HttpClientObject(object):
-    def __init__(self, pools_size=4):
+    def __init__(self, pool_manager=None):
 
         # https pool manager
-        self.pool_manager = urllib3.PoolManager(
-            num_pools=pools_size
-        )
+        if  pool_manager is not None:
+            self.pool_manager = pool_manager
+        else:
+            self.pool_manager = urllib3.PoolManager(num_pools=4)
 
     def request(self, method, url, query_params=None, headers=None,
                 body=None, post_params=None):

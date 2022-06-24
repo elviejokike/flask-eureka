@@ -21,8 +21,6 @@ from .httpclient import HttpClientObject, ApiException
 from .hostinfo import HostInfo
 
 logger = logging.getLogger('service.eureka')
-logger.setLevel(logging.INFO)
-
 
 class EurekaClientException(Exception):
     pass
@@ -54,6 +52,7 @@ class EurekaClient(object):
     EUREKA_SERVICE_PATH = 'EUREKA_SERVICE_PATH'
     EUREKA_INSTANCE_HOSTNAME = 'EUREKA_INSTANCE_HOSTNAME'
     EUREKA_INSTANCE_PORT = 'EUREKA_INSTANCE_PORT'
+    EUREKA_INSTANCE_SECURE_PORT = 'EUREKA_INSTANCE_SECURE_PORT'
 
     def __init__(self,
                  name,
@@ -65,6 +64,7 @@ class EurekaClient(object):
                  vip_address=None,
                  secure_vip_address=None,
                  port=None,
+                 secure_port=None,
                  use_dns=True,
                  region=None,
                  prefer_same_zone=True,
@@ -72,7 +72,8 @@ class EurekaClient(object):
                  eureka_port=None,
                  https_enabled=False,
                  heartbeat_interval=None,
-                 service_path=None):
+                 service_path=None,
+                 pool_manager=None):
 
         self.app_name = name
 
@@ -82,7 +83,7 @@ class EurekaClient(object):
         self.service_path = service_path or os.environ.get(EurekaClient.EUREKA_SERVICE_PATH, 'eureka/apps')
         self.host_name = host_name or os.environ.get(EurekaClient.EUREKA_INSTANCE_HOSTNAME, None)
         self.port = port or os.environ.get(EurekaClient.EUREKA_INSTANCE_PORT, None)
-        self.secure_port = port
+        self.secure_port = secure_port or os.environ.get(EurekaClient.EUREKA_INSTANCE_SECURE_PORT, None)
         self.use_dns = use_dns
         self.region = region
         self.prefer_same_zone = prefer_same_zone
@@ -110,7 +111,7 @@ class EurekaClient(object):
         # Relative URL to eureka
         self.context = context
         self.eureka_urls = self.get_eureka_urls()
-        self.requests = HttpClientObject()
+        self.requests = HttpClientObject(pool_manager=pool_manager)
 
     def _get_txt_records_from_dns(self, domain):
         records = dns.resolver.query(domain, 'TXT')
@@ -213,7 +214,11 @@ class EurekaClient(object):
                 'homePageUrl': self.app_protocol + self.host_name + ':' + str(self.port) + '/healthcheck',
                 'port': {
                     '$': self.port,
-                    '@enabled': 'true',
+                    '@enabled': 'true' if self.port is not None else 'false',
+                },
+                'securePort': {
+                    '$': self.secure_port,
+                    '@enabled': 'true' if self.secure_port is not None else 'false',
                 },
                 'vipAddress': self.vip_address,
                 'dataCenterInfo': {
@@ -240,7 +245,7 @@ class EurekaClient(object):
                 time.sleep(self.heartbeat_interval)
                 self.renew()
             except Exception as ex:
-                print("Eureka connection Exception")
+                logger.debug("Exception during heartbeat: %s" % eureka_url, str(ex))
 
     def register(self, initial_status="UP"):
         """
@@ -253,12 +258,14 @@ class EurekaClient(object):
 
         success = False
         for eureka_url in self.eureka_urls:
+            url = urljoin(eureka_url, self.service_path + "/%s" % self.app_name)
             try:
                 self.requests.POST(
-                    url=urljoin(eureka_url, self.service_path + "/%s" % self.app_name), body=instance_data,
+                    url=url, body=instance_data,
                     headers={'Content-Type': 'application/json'})
                 success = True
             except ApiException as ex:
+                logger.debug("ApiException while trying to register at '%s' error: %s" %  (url, str(ex)))
                 success = False
         if not success:
             raise EurekaRegistrationFailedException("Did not receive correct reply from any instances")
@@ -270,13 +277,15 @@ class EurekaClient(object):
         logger.info(' Updating registeration status ')
         success = False
         for eureka_url in self.eureka_urls:
+            url = urljoin(eureka_url, self.service_path + '/%s/%s' % (
+                self.app_name,
+                self.get_instance_id()
+            ))
             try:
-                self.requests.PUT(url=urljoin(eureka_url, self.service_path + '/%s/%s' % (
-                    self.app_name,
-                    self.get_instance_id()
-                )))
+                self.requests.PUT(url=url)
                 success = True
             except ApiException as ex:
+                logger.debug("ApiException while trying to renew at '%s' error: %s" % (url, str(ex)))
                 if ex.status == 404:
                     self.register()
                     return
